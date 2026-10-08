@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 
 REFERENCE_DATE = pd.Timestamp("2026-04-08")
 REBOOK_WINDOW_DAYS = 30
-MODEL_NAME = "BOULEVARD_REBOOKING_RISK"
+MODEL_NAME = "REBOOKING_RISK"
 VERSION_NAME = "V1"
 DATABASE = "SPABOOKINGS"
 SCHEMA = "PUBLIC"
@@ -28,7 +28,7 @@ MONITOR_NAME = "REBOOKING_RISK_MONITOR"
 WAREHOUSE = "AIWH"
 
 print("=" * 60)
-print("Boulevard Client Rebooking Risk Prediction Pipeline")
+print("Spa Bookings — Client Rebooking Risk Prediction Pipeline")
 print("=" * 60)
 
 print("\n[1/7] Connecting to Snowflake...")
@@ -198,7 +198,7 @@ mv = reg.log_model(
     sample_input_data=sample_input,
     conda_dependencies=["scikit-learn"],
     target_platforms=["SNOWPARK_CONTAINER_SERVICES"],
-    comment="Boulevard Client Rebooking Risk Prediction - GradientBoosting binary classifier predicting if a salon client will not rebook within 30 days",
+    comment="Spa Bookings — Client Rebooking Risk Prediction - GradientBoosting binary classifier predicting if a salon client will not rebook within 30 days",
     task=Task.TABULAR_BINARY_CLASSIFICATION,
     metrics={
         "accuracy": accuracy,

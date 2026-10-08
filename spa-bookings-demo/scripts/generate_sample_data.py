@@ -234,8 +234,8 @@ for cid, profile in client_profiles.items():
 df_appts = pd.DataFrame(appointments)
 df_orders = pd.DataFrame(order_lines)
 
-df_appts.to_csv("boulevard_appointments.csv", index=False)
-df_orders.to_csv("boulevard_commerce_order_lines.csv", index=False)
+df_appts.to_csv("appointments.csv", index=False)
+df_orders.to_csv("order_lines.csv", index=False)
 
 print(f"Appointments: {len(df_appts)} rows")
 print(f"Order Lines:  {len(df_orders)} rows")

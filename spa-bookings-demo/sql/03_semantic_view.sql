@@ -1,5 +1,5 @@
 -- =============================================================================
--- Boulevard Scheduling Demo — Step 3: Semantic View
+-- Spa Bookings Demo — Step 3: Semantic View
 -- Run AFTER 02_load_data.sql.
 -- =============================================================================
 
@@ -69,5 +69,5 @@ CREATE OR REPLACE SEMANTIC VIEW SCHEDULING_SEMANTIC_VIEW
         PROVIDERS.PROVIDER_COUNT AS COUNT(PROVIDER_ID)
             COMMENT = 'Number of providers'
     )
-    COMMENT = 'Semantic view for Boulevard salon labor forecasting and scheduling'
+    COMMENT = 'Semantic view for salon labor forecasting and scheduling'
     AI_SQL_GENERATION 'When asked about forecasts or predicted demand, query the forecasts table. The SERIES column is an array with [LOCATION_CITY, SERVICE_CATEGORY]. When asked about provider availability, join providers with availability. When calculating staffing needs, assume each provider can handle 4 appointments per day.';

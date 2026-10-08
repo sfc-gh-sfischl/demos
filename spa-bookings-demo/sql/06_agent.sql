@@ -1,5 +1,5 @@
 -- =============================================================================
--- Boulevard Scheduling Demo — Step 6: Cortex Agent
+-- Spa Bookings Demo — Step 6: Cortex Agent
 -- Run AFTER 03_semantic_view.sql and 04_stored_procedure.sql.
 -- Requires Cortex cross-region inference if 'auto' models aren't available
 -- in your region:  ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'ANY_REGION';

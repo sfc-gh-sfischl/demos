@@ -1,5 +1,5 @@
 -- =============================================================================
--- Boulevard Scheduling Demo — Step 5: Train ML.FORECAST model and generate predictions
+-- Spa Bookings Demo — Step 5: Train ML.FORECAST model and generate predictions
 -- Run AFTER 02_load_data.sql.
 -- Training takes ~1-2 min on an XS warehouse. It builds one model per
 -- location/category series (~50 models).

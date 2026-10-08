@@ -1,5 +1,5 @@
 -- =============================================================================
--- Boulevard Scheduling Demo — Step 4: Staffing Recommendation Stored Procedure
+-- Spa Bookings Demo — Step 4: Staffing Recommendation Stored Procedure
 -- Run AFTER 02_load_data.sql (needs data in tables).
 -- This SP is used as a custom tool by the Cortex Agent.
 -- =============================================================================

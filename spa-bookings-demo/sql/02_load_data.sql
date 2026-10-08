@@ -1,5 +1,5 @@
 -- =============================================================================
--- Boulevard Scheduling Demo — Step 2: Load data
+-- Spa Bookings Demo — Step 2: Load data
 --
 -- Loads APPOINTMENTS and ORDERLINES from the included CSV files via PUT + COPY.
 -- Loads PROVIDER_SKILLS and PROVIDER_AVAILABILITY via inline INSERT statements.
@@ -31,21 +31,21 @@ CREATE OR REPLACE STAGE SPABOOKINGS_LOAD
 -- Adjust paths to where you unzipped the package.
 -- ============================================================
 -- From the package root directory:
-PUT file://data/boulevard_appointments.csv @SPABOOKINGS_LOAD AUTO_COMPRESS = TRUE;
-PUT file://data/boulevard_commerce_order_lines.csv @SPABOOKINGS_LOAD AUTO_COMPRESS = TRUE;
+PUT file://data/appointments.csv @SPABOOKINGS_LOAD AUTO_COMPRESS = TRUE;
+PUT file://data/order_lines.csv @SPABOOKINGS_LOAD AUTO_COMPRESS = TRUE;
 
 -- ============================================================
 -- COPY into APPOINTMENTS and ORDERLINES
 -- ============================================================
 TRUNCATE TABLE APPOINTMENTS;
 COPY INTO APPOINTMENTS
-    FROM @SPABOOKINGS_LOAD/boulevard_appointments.csv
+    FROM @SPABOOKINGS_LOAD/appointments.csv
     FILE_FORMAT = SPABOOKINGS_CSV
     ON_ERROR = 'CONTINUE';
 
 TRUNCATE TABLE ORDERLINES;
 COPY INTO ORDERLINES
-    FROM @SPABOOKINGS_LOAD/boulevard_commerce_order_lines.csv
+    FROM @SPABOOKINGS_LOAD/order_lines.csv
     FILE_FORMAT = SPABOOKINGS_CSV
     ON_ERROR = 'CONTINUE';
 

@@ -1,5 +1,5 @@
 -- =============================================================================
--- Boulevard Scheduling Demo — Step 1: Database, warehouse context, and tables
+-- Spa Bookings Demo — Step 1: Database, warehouse context, and tables
 -- Run as a role with CREATE DATABASE (e.g. SYSADMIN or ACCOUNTADMIN).
 -- To use a different warehouse, edit the USE WAREHOUSE line below.
 -- =============================================================================

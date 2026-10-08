@@ -1,4 +1,4 @@
-# Boulevard Scheduling Demo — Labor Forecasting & Intelligent Scheduling
+# Spa Bookings Demo — Labor Forecasting & Intelligent Scheduling
 
 A self-contained demo for salon/spa labor forecasting and intelligent scheduling:
 
@@ -19,11 +19,11 @@ sql/03_semantic_view.sql         SCHEDULING_SEMANTIC_VIEW
 sql/04_stored_procedure.sql      RECOMMEND_SCHEDULE (staffing recommendations)
 sql/05_forecast_model.sql        ML.FORECAST train + 14-day prediction
 sql/06_agent.sql                 SCHEDULING_AGENT (Cortex Agent)
-data/boulevard_appointments.csv              4,514 appointment rows
-data/boulevard_commerce_order_lines.csv      4,368 order line rows
-notebooks/boulevard_labor_scheduling.ipynb   end-to-end walkthrough notebook
-scripts/generate_boulevard_sample.py         Python generator (re-creates the CSVs)
-scripts/boulevard_ml_pipeline.py             ML pipeline for CLIENT_REBOOKING_PREDICTIONS
+data/appointments.csv                        4,514 appointment rows
+data/order_lines.csv                        4,368 order line rows
+notebooks/labor_scheduling.ipynb             end-to-end walkthrough notebook
+scripts/generate_sample_data.py              Python generator (re-creates the CSVs)
+scripts/ml_pipeline.py                       ML pipeline for CLIENT_REBOOKING_PREDICTIONS
 ```
 
 ## Prerequisites
@@ -42,7 +42,7 @@ scripts/boulevard_ml_pipeline.py             ML pipeline for CLIENT_REBOOKING_PR
 2. **Load data (step 02)** — the PUT commands must be run from **SnowSQL or `snow` CLI**, not Snowsight:
 
    ```bash
-   cd boulevard_scheduling_demo_package
+   cd spa-bookings-demo
    snow sql -f sql/01_setup_and_tables.sql -c <connection>
    snow sql -f sql/02_load_data.sql -c <connection>
    snow sql -f sql/03_semantic_view.sql -c <connection>
@@ -74,7 +74,7 @@ scripts/boulevard_ml_pipeline.py             ML pipeline for CLIENT_REBOOKING_PR
    - "Are we understaffed anywhere next week?"
    - "Which providers are available on Saturdays?"
 
-5. (Optional) Upload `notebooks/boulevard_labor_scheduling.ipynb` to a Snowflake Notebook for the guided walkthrough. Add `matplotlib` and `snowflake-ml-python` packages if running in Snowsight.
+5. (Optional) Upload `notebooks/labor_scheduling.ipynb` to a Snowflake Notebook for the guided walkthrough. Add `matplotlib` and `snowflake-ml-python` packages if running in Snowsight.
 
 ## Re-generating the data (optional)
 
@@ -82,14 +82,14 @@ To regenerate the CSVs from scratch (e.g. to change the date range or number of 
 
 ```bash
 pip install pandas numpy
-python scripts/generate_boulevard_sample.py
+python scripts/generate_sample_data.py
 ```
 
 To populate the `CLIENT_REBOOKING_PREDICTIONS` table (250 rows, ML-based churn risk):
 
 ```bash
 pip install snowflake-ml-python scikit-learn
-python scripts/boulevard_ml_pipeline.py
+python scripts/ml_pipeline.py
 ```
 
 This trains a GradientBoosting model, registers it in the Model Registry, and writes predictions to the table.
