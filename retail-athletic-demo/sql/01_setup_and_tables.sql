@@ -1,0 +1,230 @@
+-- =============================================================================
+-- Retail Athletic Demo — Step 1: Database, warehouse context, and tables
+-- Run as a role with CREATE DATABASE (e.g. SYSADMIN or ACCOUNTADMIN).
+-- To use a different database name, find/replace RETAIL_ATHLETIC_DEMO in ALL
+-- files in this package. To use a different warehouse, edit the USE WAREHOUSE line.
+-- =============================================================================
+
+USE WAREHOUSE COMPUTE_WH;   -- <-- change to your warehouse
+
+CREATE DATABASE IF NOT EXISTS RETAIL_ATHLETIC_DEMO;
+CREATE SCHEMA IF NOT EXISTS RETAIL_ATHLETIC_DEMO.PUBLIC;
+USE SCHEMA RETAIL_ATHLETIC_DEMO.PUBLIC;
+
+-- ---------------------------------------------------------------- dimensions
+CREATE OR REPLACE TABLE DIM_PRODUCT (
+    PRODUCT_ID          VARCHAR(12)   PRIMARY KEY,
+    PRODUCT_NAME        VARCHAR(200),
+    PRODUCT_LINE        VARCHAR(50),
+    CATEGORY            VARCHAR(80),
+    SUBCATEGORY         VARCHAR(80),
+    MATERIAL            VARCHAR(100),
+    COLOR               VARCHAR(50),
+    SIZE                VARCHAR(10),
+    SEASON              VARCHAR(30),
+    LAUNCH_DATE         DATE,
+    LIFECYCLE_STAGE     VARCHAR(30),
+    UNIT_COST           NUMBER(10,2),
+    MSRP                NUMBER(10,2),
+    WHOLESALE_PRICE     NUMBER(10,2),
+    IS_SUSTAINABLE      BOOLEAN,
+    CREATED_AT          TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+CREATE OR REPLACE TABLE DIM_STORE (
+    STORE_ID            VARCHAR(12)   PRIMARY KEY,
+    STORE_NAME          VARCHAR(100),
+    CITY                VARCHAR(60),
+    STATE               VARCHAR(40),
+    REGION              VARCHAR(30),
+    CHANNEL             VARCHAR(40),
+    OPEN_DATE           DATE,
+    SQUARE_FEET         NUMBER(8),
+    IS_ACTIVE           BOOLEAN DEFAULT TRUE
+);
+
+CREATE OR REPLACE TABLE DIM_CUSTOMER (
+    CUSTOMER_ID         VARCHAR(12)   PRIMARY KEY,
+    FIRST_NAME          VARCHAR(60),
+    LAST_NAME           VARCHAR(60),
+    EMAIL               VARCHAR(200),
+    PHONE               VARCHAR(30),
+    CITY                VARCHAR(60),
+    STATE               VARCHAR(40),
+    REGION              VARCHAR(30),
+    SEGMENT             VARCHAR(40),
+    LIFETIME_VALUE      NUMBER(12,2),
+    FIRST_PURCHASE_DATE DATE,
+    LAST_PURCHASE_DATE  DATE,
+    TOTAL_ORDERS        NUMBER(6),
+    PREFERRED_CHANNEL   VARCHAR(40),
+    OPT_IN_EMAIL        BOOLEAN,
+    OPT_IN_SMS          BOOLEAN,
+    CHURN_RISK_SCORE    NUMBER(5,4),
+    NPS_SCORE           NUMBER(3),
+    CREATED_AT          TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+CREATE OR REPLACE TABLE DIM_MARKETING_CAMPAIGN (
+    CAMPAIGN_ID         VARCHAR(12)   PRIMARY KEY,
+    CAMPAIGN_NAME       VARCHAR(200),
+    CAMPAIGN_TYPE       VARCHAR(40),
+    CHANNEL             VARCHAR(40),
+    START_DATE          DATE,
+    END_DATE            DATE,
+    BUDGET              NUMBER(12,2),
+    TARGET_SEGMENT      VARCHAR(40),
+    PRODUCT_LINE        VARCHAR(50),
+    STATUS              VARCHAR(20)
+);
+
+-- --------------------------------------------------------------------- facts
+CREATE OR REPLACE TABLE FACT_DAILY_SALES (
+    SALE_ID             VARCHAR(12)   PRIMARY KEY,
+    SALE_DATE           DATE,
+    PRODUCT_ID          VARCHAR(12),
+    STORE_ID            VARCHAR(12),
+    CUSTOMER_ID         VARCHAR(12),
+    CHANNEL             VARCHAR(40),
+    QUANTITY            NUMBER(6),
+    UNIT_PRICE          NUMBER(10,2),
+    DISCOUNT_PCT        NUMBER(5,2),
+    GROSS_REVENUE       NUMBER(12,2),
+    NET_REVENUE         NUMBER(12,2),
+    COST_OF_GOODS       NUMBER(12,2),
+    RETURN_FLAG         BOOLEAN DEFAULT FALSE
+);
+
+CREATE OR REPLACE TABLE FACT_INVENTORY_SNAPSHOT (
+    SNAPSHOT_DATE       DATE,
+    PRODUCT_ID          VARCHAR(12),
+    STORE_ID            VARCHAR(12),
+    ON_HAND_QTY         NUMBER(8),
+    IN_TRANSIT_QTY      NUMBER(8),
+    ALLOCATED_QTY       NUMBER(8),
+    WEEKS_OF_SUPPLY     NUMBER(5,1),
+    REORDER_POINT       NUMBER(8),
+    STOCKOUT_FLAG       BOOLEAN DEFAULT FALSE
+);
+
+CREATE OR REPLACE TABLE FACT_DEMAND_FORECAST (
+    FORECAST_ID         VARCHAR(12)   PRIMARY KEY,
+    FORECAST_DATE       DATE,
+    PRODUCT_ID          VARCHAR(12),
+    STORE_ID            VARCHAR(12),
+    SEASON              VARCHAR(30),
+    FORECAST_QTY        NUMBER(8),
+    ACTUAL_QTY          NUMBER(8),
+    FORECAST_REVENUE    NUMBER(12,2),
+    ACTUAL_REVENUE      NUMBER(12,2),
+    MODEL_VERSION       VARCHAR(20),
+    MAPE                NUMBER(6,4),
+    CREATED_AT          TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+CREATE OR REPLACE TABLE PRODUCT_DEVELOPMENT_PIPELINE (
+    PIPELINE_ID         VARCHAR(12)   PRIMARY KEY,
+    PRODUCT_NAME        VARCHAR(200),
+    PRODUCT_LINE        VARCHAR(50),
+    CATEGORY            VARCHAR(80),
+    DESIGNER            VARCHAR(100),
+    TARGET_SEASON       VARCHAR(30),
+    CURRENT_STAGE       VARCHAR(40),
+    STAGE_ENTRY_DATE    DATE,
+    TARGET_LAUNCH_DATE  DATE,
+    ESTIMATED_COST      NUMBER(10,2),
+    SUSTAINABILITY_CERT VARCHAR(60),
+    MATERIAL_INNOVATION VARCHAR(200),
+    RISK_LEVEL          VARCHAR(20),
+    NOTES               VARCHAR(500),
+    CREATED_AT          TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+CREATE OR REPLACE TABLE FACT_CUSTOMER_INTERACTIONS (
+    INTERACTION_ID       VARCHAR(12)   PRIMARY KEY,
+    CUSTOMER_ID          VARCHAR(12),
+    INTERACTION_DATE     TIMESTAMP_NTZ,
+    CHANNEL              VARCHAR(40),
+    INTERACTION_TYPE     VARCHAR(40),
+    PRODUCT_ID           VARCHAR(12),
+    PAGE_VIEWS           NUMBER(5),
+    SESSION_DURATION_SEC NUMBER(8),
+    ADDED_TO_CART        BOOLEAN,
+    PURCHASED            BOOLEAN,
+    RETURNED             BOOLEAN,
+    RATING               NUMBER(2,1),
+    REVIEW_TEXT          VARCHAR(1000),
+    SENTIMENT_SCORE      NUMBER(5,4),
+    DEVICE_TYPE          VARCHAR(20),
+    REFERRAL_SOURCE      VARCHAR(60)
+);
+
+CREATE OR REPLACE TABLE FACT_CAMPAIGN_PERFORMANCE (
+    PERF_ID             VARCHAR(12)   PRIMARY KEY,
+    CAMPAIGN_ID         VARCHAR(12),
+    PERF_DATE           DATE,
+    IMPRESSIONS         NUMBER(10),
+    CLICKS              NUMBER(8),
+    CONVERSIONS         NUMBER(6),
+    REVENUE_ATTRIBUTED  NUMBER(12,2),
+    COST                NUMBER(12,2),
+    ROAS                NUMBER(8,2)
+);
+
+CREATE OR REPLACE TABLE FACT_DAILY_KPI (
+    KPI_DATE            DATE,
+    CHANNEL             VARCHAR(40),
+    REGION              VARCHAR(30),
+    GROSS_REVENUE       NUMBER(14,2),
+    NET_REVENUE         NUMBER(14,2),
+    ORDERS              NUMBER(8),
+    UNITS_SOLD          NUMBER(8),
+    AVG_ORDER_VALUE     NUMBER(10,2),
+    RETURN_RATE         NUMBER(5,4),
+    CONVERSION_RATE     NUMBER(5,4),
+    NEW_CUSTOMERS       NUMBER(6),
+    REPEAT_CUSTOMERS    NUMBER(6),
+    INVENTORY_TURNS     NUMBER(5,2),
+    GROSS_MARGIN_PCT    NUMBER(5,4),
+    COGS                NUMBER(14,2),
+    MARKETING_SPEND     NUMBER(12,2),
+    CAC                 NUMBER(10,2),
+    LTV_TO_CAC_RATIO    NUMBER(6,2)
+);
+
+CREATE OR REPLACE TABLE ML_CUSTOMER_FEATURES (
+    CUSTOMER_ID               VARCHAR(12)   PRIMARY KEY,
+    FEATURE_DATE              DATE,
+    DAYS_SINCE_LAST_PURCHASE  NUMBER(6),
+    PURCHASE_FREQUENCY        NUMBER(6,2),
+    AVG_ORDER_VALUE           NUMBER(10,2),
+    TOTAL_SPEND_12M           NUMBER(12,2),
+    PRODUCT_DIVERSITY_SCORE   NUMBER(5,4),
+    CHANNEL_DIVERSITY_SCORE   NUMBER(5,4),
+    RETURN_RATE               NUMBER(5,4),
+    EMAIL_ENGAGEMENT_RATE     NUMBER(5,4),
+    WEB_VISITS_30D            NUMBER(6),
+    CHURN_PROBABILITY         NUMBER(5,4),
+    PREDICTED_NEXT_PURCHASE   DATE,
+    RECOMMENDED_PRODUCTS      VARCHAR(500),
+    CLV_PREDICTED_12M         NUMBER(12,2),
+    SEGMENT_PREDICTED         VARCHAR(40)
+);
+
+CREATE OR REPLACE TABLE ASSORTMENT_PLAN (
+    PLAN_ID             VARCHAR(12)   PRIMARY KEY,
+    SEASON              VARCHAR(30),
+    STORE_ID            VARCHAR(12),
+    CATEGORY            VARCHAR(80),
+    PRODUCT_LINE        VARCHAR(50),
+    PLANNED_STYLES      NUMBER(4),
+    PLANNED_UNITS       NUMBER(8),
+    PLANNED_REVENUE     NUMBER(12,2),
+    ACTUAL_STYLES       NUMBER(4),
+    ACTUAL_UNITS        NUMBER(8),
+    ACTUAL_REVENUE      NUMBER(12,2),
+    SELL_THROUGH_PCT    NUMBER(5,4),
+    MARKDOWN_PCT        NUMBER(5,4),
+    PLAN_STATUS         VARCHAR(20),
+    LAST_UPDATED        TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
