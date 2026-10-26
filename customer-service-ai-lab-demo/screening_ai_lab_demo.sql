@@ -26,6 +26,10 @@
 -- =====================================================================
 USE ROLE ACCOUNTADMIN;
 
+-- Lets Cortex AI functions / Agent use models not hosted in this region.
+-- Safe to skip if your account already has this set.
+ALTER ACCOUNT SET CORTEX_ENABLED_CROSS_REGION = 'ANY_REGION';
+
 CREATE WAREHOUSE IF NOT EXISTS SCREENING_DEMO_WH
   WAREHOUSE_SIZE = SMALL AUTO_SUSPEND = 60 AUTO_RESUME = TRUE INITIALLY_SUSPENDED = TRUE;
 USE WAREHOUSE SCREENING_DEMO_WH;
